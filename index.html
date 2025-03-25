@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photobooth Keren</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Efek glowing bingkai */
+    .frame-glow {
+      border: 6px solid transparent;
+      border-image: linear-gradient(45deg, #ff00cc, #3333ff, #00ffff, #ffcc00) 1;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3),
+                  0 0 40px rgba(0, 255, 255, 0.2),
+                  0 0 60px rgba(255, 255, 0, 0.2);
+      border-radius: 1rem;
+    }
+
+    /* Corner stiker */
+    .corner-sticker::before,
+    .corner-sticker::after {
+      content: "⭐";
+      position: absolute;
+      font-size: 1.5rem;
+    }
+
+    .corner-sticker::before {
+      top: -0.75rem;
+      left: -0.75rem;
+    }
+
+    .corner-sticker::after {
+      bottom: -0.75rem;
+      right: -0.75rem;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-gray-900 via-indigo-900 to-black text-white flex flex-col items-center justify-center min-h-screen p-4">
+  <h1 class="text-4xl font-bold mb-6 text-pink-400 drop-shadow-lg">✨ Photobooth Keren ✨</h1>
+  
+  <div class="relative frame-glow corner-sticker">
+    <video id="video" autoplay playsinline class="rounded-lg w-full max-w-md"></video>
+  </div>
+
+  <button id="snap" class="mt-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-purple-600 hover:to-pink-500 text-white font-bold py-2 px-6 rounded-full shadow-lg transition">
+    Ambil Foto
+  </button>
+
+  <canvas id="canvas" class="hidden"></canvas>
+  
+  <div class="mt-8 w-full max-w-md">
+    <h2 class="text-xl font-semibold mb-2 text-center text-cyan-300">📸 Hasil Foto Kamu:</h2>
+    <div id="photos" class="grid grid-cols-2 gap-4"></div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const photos = document.getElementById('photos');
+    const snap = document.getElementById('snap');
+
+    // Minta akses kamera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert('Gagal mengakses kamera: ' + err);
+      });
+
+    snap.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png');
+      img.className = "rounded-lg frame-glow";
+      photos.prepend(img);
+    });
+  </script>
+</body>
+</html>
